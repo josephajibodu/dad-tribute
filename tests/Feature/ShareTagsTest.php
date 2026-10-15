@@ -11,7 +11,7 @@ class ShareTagsTest extends TestCase
         $response = $this->get(route('tribute'));
 
         $response->assertOk();
-        $response->assertSee('<meta property="og:image" content="'.asset('images/share-card.jpg').'">', false);
+        $response->assertSee('<meta property="og:image" content="https://assets-3bqntuhgsbwwdx.flitops.xyz/share-card.jpg">', false);
         $response->assertSee('<meta property="og:image:width" content="1200">', false);
         $response->assertSee('<meta property="og:image:height" content="630">', false);
         $response->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
@@ -26,8 +26,31 @@ class ShareTagsTest extends TestCase
         $response = $this->get(route('tribute'));
 
         $response->assertOk();
-        $response->assertSee('<meta property="og:image" content="'.asset('images/portrait.jpg').'">', false);
+        $response->assertSee('<meta property="og:image" content="https://assets-3bqntuhgsbwwdx.flitops.xyz/portrait.jpg">', false);
         $response->assertSee('<meta property="og:image:width" content="660">', false);
         $response->assertSee('<meta property="og:image:height" content="867">', false);
+    }
+
+    public function test_photos_are_served_from_the_cloudflare_bucket_in_the_same_folders(): void
+    {
+        config(['tribute.images_url' => 'https://assets.example.com/']);
+
+        $response = $this->get(route('tribute'));
+
+        $response->assertOk();
+        $response->assertSee('src="https://assets.example.com/portrait.jpg"', false);
+        $response->assertSee('https://assets.example.com/moments/01.jpg', false);
+        $response->assertDontSee(asset('images/moments/01.jpg'), false);
+    }
+
+    public function test_photos_are_served_from_this_site_when_no_images_url_is_set(): void
+    {
+        config(['tribute.images_url' => null]);
+
+        $response = $this->get(route('tribute'));
+
+        $response->assertOk();
+        $response->assertSee('src="'.asset('images/portrait.jpg').'"', false);
+        $response->assertSee('<meta property="og:image" content="'.asset('images/share-card.jpg').'">', false);
     }
 }

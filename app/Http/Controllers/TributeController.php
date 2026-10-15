@@ -86,7 +86,21 @@ class TributeController extends Controller
 
     private function imageOrNull(?string $path): ?string
     {
-        return $path && is_file(public_path($path)) ? asset($path) : null;
+        return $path && is_file(public_path($path)) ? $this->imageUrl($path) : null;
+    }
+
+    /**
+     * Where a photo in public/images is served from: the Cloudflare bucket when one is set, otherwise this site.
+     */
+    private function imageUrl(string $path): string
+    {
+        $imagesUrl = config('tribute.images_url');
+
+        if (! $imagesUrl) {
+            return asset($path);
+        }
+
+        return rtrim($imagesUrl, '/').'/'.Str::chopStart($path, 'images/');
     }
 
     /**
@@ -106,6 +120,6 @@ class TributeController extends Controller
 
         [$width, $height] = getimagesize(public_path($path));
 
-        return ['url' => asset($path), 'width' => $width, 'height' => $height];
+        return ['url' => $this->imageUrl($path), 'width' => $width, 'height' => $height];
     }
 }

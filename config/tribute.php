@@ -16,6 +16,12 @@
 
 return [
 
+    // public/images is mirrored, folder for folder, in the "tribute" bucket
+    // on Cloudflare, and the page loads its photos from there. The local
+    // copies stay the master: a photo only shows if it exists in public/images.
+    // Set TRIBUTE_IMAGES_URL to an empty value to serve them from this site.
+    'images_url' => env('TRIBUTE_IMAGES_URL', 'https://assets-3bqntuhgsbwwdx.flitops.xyz'),
+
     'name' => [
         'first' => 'Samson',
         'middle' => 'Toyin',
