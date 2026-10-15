@@ -30,6 +30,7 @@ class TributeController extends Controller
             't' => $config,
             'tracks' => $tracks,
             'portrait' => $this->imageOrNull($config['portrait'] ?? null),
+            'shareImage' => $this->shareImage($config),
             'moments' => collect($config['moments'] ?? [])->map(fn (array $m) => $m + [
                 'src' => $this->imageOrNull($m['image'] ?? null),
             ]),
@@ -70,5 +71,25 @@ class TributeController extends Controller
     private function imageOrNull(?string $path): ?string
     {
         return $path && is_file(public_path($path)) ? asset($path) : null;
+    }
+
+    /**
+     * The picture link previews show: the share card, or the portrait if the card is missing.
+     *
+     * @param  array<string, mixed>  $config
+     * @return array{url: string, width: int, height: int}|null
+     */
+    private function shareImage(array $config): ?array
+    {
+        $path = collect([$config['share_image'] ?? null, $config['portrait'] ?? null])
+            ->first(fn (?string $path) => $path && is_file(public_path($path)));
+
+        if (! $path) {
+            return null;
+        }
+
+        [$width, $height] = getimagesize(public_path($path));
+
+        return ['url' => asset($path), 'width' => $width, 'height' => $height];
     }
 }

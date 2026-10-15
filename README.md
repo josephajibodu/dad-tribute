@@ -20,7 +20,8 @@ No npm build is needed: the page uses plain CSS and JS from `public/`.
 | --- | --- |
 | All words on the page (name, verse, life chapters, tributes, service details) | `config/tribute.php` |
 | Portrait | `public/images/portrait.jpg` |
-| Gallery photos | `public/images/moments/01.jpg` ... `07.jpg` (captions in config) |
+| Link preview card (1200 x 630) | `public/images/share-card.jpg`, with its summary text under `summary` in config |
+| Gallery photos | `public/images/moments/01.jpg` ... `18.jpg` (captions in config) |
 | Music | `public/audio/*.mp3`, listed under `music` in config |
 | Page markup | `resources/views/tribute.blade.php` |
 | Styles / animations | `public/css/tribute.css` |
@@ -36,9 +37,12 @@ The page opens with a short welcome screen: **Enter with music** or **Enter quie
 Browsers block sound until the visitor clicks, so this screen is what makes the music
 start reliably. The floating player (bottom left) has **Next** and **Mute**; music fades
 in and out, pauses when the tab is hidden, and moves to the next song when one ends.
+Songs play in a random order, shuffled for each visit, and every song plays once before
+any repeats.
 
-The playlist is Ìjọba Ọ̀run (Lara George), It Is Well With My Soul, and Amaram Onyewem
-(Mercy Chinwo ft. Pastor Jerry Eze). To add or swap a song, drop the mp3 in `public/audio/` and add a line to
+The playlist is Ìjọba Ọ̀run (Lara George), It Is Well With My Soul, Amaram Onyewem
+(Mercy Chinwo ft. Pastor Jerry Eze), Gone Too Soon (Michael Jackson), and Logan Ti Ode
+(Tope Alabi). To add or swap a song, drop the mp3 in `public/audio/` and add a line to
 `music` in `config/tribute.php`. Use a recording you have permission to use (a choir,
 family recording, or royalty-free version of a public-domain hymn).
 

@@ -8,13 +8,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $fullName }} ({{ $t['born'] }} - {{ $t['died'] }}) | In Loving Memory</title>
-    <meta name="description" content="In loving memory of {{ $fullName }}, {{ implode(', ', $t['roles']) }}. {{ $t['born'] }} - {{ $t['died'] }}.">
-    <meta property="og:title" content="In Loving Memory of {{ $fullName }}">
-    <meta property="og:description" content="{{ $t['born'] }} - {{ $t['died'] }}. {{ $t['scripture']['text'] }} {{ $t['scripture']['emphasis'] }}">
-    @if ($portrait)
-        <meta property="og:image" content="{{ $portrait }}">
+    <meta name="description" content="{{ $t['summary'] }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('tribute') }}">
+    <meta property="og:title" content="In Loving Memory of {{ $fullName }} ({{ $t['born'] }} – {{ $t['died'] }})">
+    <meta property="og:description" content="{{ $t['summary'] }}">
+    @if ($shareImage)
+        <meta property="og:image" content="{{ $shareImage['url'] }}">
+        <meta property="og:image:width" content="{{ $shareImage['width'] }}">
+        <meta property="og:image:height" content="{{ $shareImage['height'] }}">
+        <meta property="og:image:alt" content="{{ $fullName }}, {{ $t['born'] }} – {{ $t['died'] }}. In loving memory.">
+        <meta name="twitter:card" content="summary_large_image">
+    @else
+        <meta name="twitter:card" content="summary">
     @endif
     <meta name="theme-color" content="#0D0C0A">
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ filemtime(public_path('apple-touch-icon.png')) }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Hanken+Grotesk:wght@300;400;500;600&display=swap">
@@ -175,7 +185,8 @@
                     @foreach ($moments as $m)
                         <figure class="photo reveal {{ ! empty($m['tall']) ? 'photo--tall' : '' }}" style="--d:{{ ($loop->index % 3) * 0.08 }}s">
                             @if ($m['src'])
-                                <img src="{{ $m['src'] }}" alt="{{ $m['caption'] }}" loading="lazy">
+                                <img src="{{ $m['src'] }}" alt="{{ $m['caption'] }}" loading="lazy" decoding="async">
+                                <button type="button" class="photo__open" data-lightbox-open aria-label="View photo: {{ $m['caption'] }}"></button>
                             @endif
                             <figcaption>
                                 <span class="photo__label">{{ $m['label'] }}</span>
@@ -240,9 +251,15 @@
                         <dd>{{ $t['service']['time'] }}</dd>
                     </div>
                     <div>
-                        <dt>Venue</dt>
-                        <dd>{{ $t['service']['venue'] }}<br>{{ $t['service']['venue_area'] }}</dd>
+                        <dt>Funeral service</dt>
+                        <dd>{{ $t['service']['venue'] }}<span class="service__area">{{ $t['service']['venue_area'] }}</span></dd>
                     </div>
+                    @if (! empty($t['service']['interment']))
+                        <div>
+                            <dt>Interment</dt>
+                            <dd>{{ $t['service']['interment'] }}<span class="service__area">{{ $t['service']['interment_area'] }}</span></dd>
+                        </div>
+                    @endif
                     @if ($t['service']['livestream_url'])
                         <div>
                             <dt>Livestream</dt>
@@ -313,11 +330,53 @@
             </div>
         </section>
 
+        {{-- The lighting moment (shown on small screens, where the candle can't sit beside the form) --}}
+        <div class="candle-moment" data-candle-moment aria-hidden="true" role="dialog" aria-label="Your candle">
+            <div class="candle-moment__inner">
+                <div class="glow glow--moment" aria-hidden="true"></div>
+                <div class="candle candle--moment" aria-hidden="true">
+                    <div class="flame"></div>
+                    <div class="wick"></div>
+                    <div class="wax"></div>
+                </div>
+                <p class="candle-moment__count" data-moment-count></p>
+                <p class="candle-moment__note" data-moment-note></p>
+                <button type="button" class="btn btn--candle" data-moment-close>
+                    <span>Light another candle</span>
+                </button>
+            </div>
+        </div>
+
         <footer class="site-footer">
             <p class="display display--small">Forever in <em>our hearts.</em></p>
             <p class="footer-note">{{ $t['footer'] }} · {{ $t['died'] }}</p>
         </footer>
     </div>
+
+    {{-- PHOTO VIEWER (opens when a gallery photo is tapped) --}}
+    @if ($moments->whereNotNull('src')->isNotEmpty())
+        <div class="lightbox" data-lightbox aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo viewer">
+            <button type="button" class="icon-btn lightbox__close" data-lightbox-close aria-label="Close photo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+            </button>
+            <figure class="lightbox__figure">
+                <img data-lightbox-img src="data:," alt="">
+                <figcaption>
+                    <span class="photo__label" data-lightbox-label></span>
+                    <span class="photo__caption" data-lightbox-caption></span>
+                </figcaption>
+            </figure>
+            <div class="lightbox__nav">
+                <button type="button" class="icon-btn" data-lightbox-prev aria-label="Previous photo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+                </button>
+                <span class="lightbox__count" data-lightbox-count></span>
+                <button type="button" class="icon-btn" data-lightbox-next aria-label="Next photo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    @endif
 
     {{-- MUSIC PLAYER --}}
     @if ($tracks->isNotEmpty())

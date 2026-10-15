@@ -29,7 +29,10 @@
         audio.preload = 'auto';
         audio.volume = 0;
 
-        var index = 0;
+        // Songs play in a random order, shuffled for each visit and again
+        // whenever the list runs out, so each one plays before any repeats.
+        var order = shuffle(-1);
+        var position = 0;
         var muted = true;
         var fadeFrame = null;
 
@@ -39,10 +42,27 @@
         var statusEl = el.querySelector('[data-status]');
         var eq = el.querySelector('.eq');
 
-        function load(i) {
-            index = (i + tracks.length) % tracks.length;
-            audio.src = tracks[index].src;
-            titleEl.textContent = tracks[index].title;
+        function shuffle(avoidFirst) {
+            var list = tracks.map(function (track, i) { return i; });
+            for (var i = list.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var swap = list[i];
+                list[i] = list[j];
+                list[j] = swap;
+            }
+            // Never start a new round with the song that just finished.
+            if (list.length > 1 && list[0] === avoidFirst) list.push(list.shift());
+            return list;
+        }
+
+        function load(p) {
+            if (p >= order.length) {
+                order = shuffle(order[order.length - 1]);
+                p = 0;
+            }
+            position = p;
+            audio.src = tracks[order[position]].src;
+            titleEl.textContent = tracks[order[position]].title;
         }
 
         function fadeTo(to, ms, done) {
@@ -103,7 +123,7 @@
             nextBtn.addEventListener('click', function () {
                 var wasMuted = muted;
                 fadeTo(0, 500, function () {
-                    load(index + 1);
+                    load(position + 1);
                     if (!wasMuted) {
                         audio.play();
                         fadeTo(target, 1600);
@@ -113,7 +133,7 @@
         }
 
         audio.addEventListener('ended', function () {
-            load(index + 1);
+            load(position + 1);
             if (!muted) {
                 audio.volume = 0;
                 audio.play();
@@ -211,6 +231,84 @@
     }
 
     /* ------------------------------------------------------------------
+       Photo viewer
+       ------------------------------------------------------------------ */
+
+    var viewer = document.querySelector('[data-lightbox]');
+    var photos = Array.prototype.filter.call(document.querySelectorAll('.gallery .photo'), function (fig) {
+        return fig.querySelector('[data-lightbox-open]');
+    });
+    if (viewer && photos.length) {
+        var viewerImg = viewer.querySelector('[data-lightbox-img]');
+        var viewerLabel = viewer.querySelector('[data-lightbox-label]');
+        var viewerCaption = viewer.querySelector('[data-lightbox-caption]');
+        var viewerCount = viewer.querySelector('[data-lightbox-count]');
+        var viewerClose = viewer.querySelector('[data-lightbox-close]');
+        var viewerButtons = viewer.querySelectorAll('button');
+        var current = 0;
+        var opener = null;
+        var touchX = null;
+        var isOpen = function () { return viewer.classList.contains('is-visible'); };
+
+        function showPhoto(i) {
+            current = (i + photos.length) % photos.length;
+            var fig = photos[current];
+            var img = fig.querySelector('img');
+            viewerImg.src = img.currentSrc || img.src;
+            viewerImg.alt = img.alt;
+            viewerLabel.textContent = fig.querySelector('.photo__label').textContent;
+            viewerCaption.textContent = fig.querySelector('.photo__caption').textContent;
+            viewerCount.textContent = (current + 1) + ' / ' + photos.length;
+        }
+        function openViewer(i) {
+            opener = document.activeElement;
+            showPhoto(i);
+            viewer.classList.add('is-visible');
+            viewer.setAttribute('aria-hidden', 'false');
+            body.classList.add('lightbox-open');
+            viewerClose.focus();
+        }
+        function closeViewer() {
+            if (!isOpen()) return;
+            viewer.classList.remove('is-visible');
+            viewer.setAttribute('aria-hidden', 'true');
+            body.classList.remove('lightbox-open');
+            if (opener) { try { opener.focus(); } catch (err) {} }
+        }
+
+        photos.forEach(function (fig, i) {
+            fig.querySelector('[data-lightbox-open]').addEventListener('click', function () { openViewer(i); });
+        });
+        viewerClose.addEventListener('click', closeViewer);
+        viewer.querySelector('[data-lightbox-prev]').addEventListener('click', function () { showPhoto(current - 1); });
+        viewer.querySelector('[data-lightbox-next]').addEventListener('click', function () { showPhoto(current + 1); });
+        viewer.addEventListener('click', function (e) { if (e.target === viewer) closeViewer(); });
+
+        document.addEventListener('keydown', function (e) {
+            if (!isOpen()) return;
+            if (e.key === 'Escape') closeViewer();
+            else if (e.key === 'ArrowLeft') showPhoto(current - 1);
+            else if (e.key === 'ArrowRight') showPhoto(current + 1);
+            else if (e.key === 'Tab') {
+                // Keep keyboard focus on the viewer's own buttons while it is open
+                var first = viewerButtons[0];
+                var last = viewerButtons[viewerButtons.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+        });
+
+        // Swipe left or right to move between photos on touch screens
+        viewer.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+        viewer.addEventListener('touchend', function (e) {
+            if (touchX === null) return;
+            var dx = e.changedTouches[0].clientX - touchX;
+            touchX = null;
+            if (Math.abs(dx) > 50) showPhoto(current + (dx < 0 ? 1 : -1));
+        });
+    }
+
+    /* ------------------------------------------------------------------
        Light a candle
        ------------------------------------------------------------------ */
 
@@ -222,6 +320,40 @@
         var messageEl = form.querySelector('[data-form-message]');
         var countEl = document.querySelector('[data-candle-count]');
         var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        /* The "moment" overlay greets small screens, where the candle can't sit beside the form */
+        var moment = document.querySelector('[data-candle-moment]');
+        var momentCount = moment && moment.querySelector('[data-moment-count]');
+        var momentNote = moment && moment.querySelector('[data-moment-note]');
+        var momentClose = moment && moment.querySelector('[data-moment-close]');
+        var narrow = function () { return window.matchMedia('(max-width: 899px)').matches; };
+        var momentTimer = null;
+
+        function showMoment(note, countText) {
+            if (!moment) return;
+            if (momentCount) momentCount.textContent = countText || '';
+            if (momentNote) momentNote.textContent = note || '';
+            clearTimeout(momentTimer);
+            moment.classList.remove('is-burning');
+            moment.classList.add('is-visible');
+            moment.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('moment-open');
+            if (momentClose) { try { momentClose.focus(); } catch (err) {} }
+            // Let the overlay fade in around an unlit candle, then light it so the visitor sees it catch
+            momentTimer = setTimeout(function () { moment.classList.add('is-burning'); }, reduceMotion ? 0 : 1000);
+        }
+        function hideMoment() {
+            if (!moment) return;
+            clearTimeout(momentTimer);
+            moment.classList.remove('is-visible');
+            moment.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('moment-open');
+            // Put the flame out only after the overlay has faded, ready to light again next time
+            momentTimer = setTimeout(function () { moment.classList.remove('is-burning'); }, 1000);
+        }
+        if (momentClose) momentClose.addEventListener('click', hideMoment);
+        if (moment) moment.addEventListener('click', function (e) { if (e.target === moment) hideMoment(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideMoment(); });
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -255,9 +387,12 @@
                 section.classList.add('is-lit');
                 label.textContent = 'Your candle is lit';
                 messageEl.textContent = r.data.message;
-                if (countEl && r.data.candles) {
-                    countEl.textContent = r.data.candles + (r.data.candles === 1 ? ' candle' : ' candles') + ' lit in his memory.';
+                var countText = '';
+                if (r.data.candles) {
+                    countText = r.data.candles + (r.data.candles === 1 ? ' candle' : ' candles') + ' lit in his memory.';
+                    if (countEl) countEl.textContent = countText;
                 }
+                if (narrow()) showMoment(r.data.message, countText);
                 form.reset();
                 setTimeout(function () {
                     button.disabled = false;

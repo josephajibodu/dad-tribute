@@ -29,6 +29,11 @@ return [
 
     'portrait' => 'images/portrait.jpg',
 
+    // What people see when the link is shared (WhatsApp, Facebook, X) and in search results.
+    // The card is 1200 x 630; if it is missing, the portrait is shared instead.
+    'share_image' => 'images/share-card.jpg',
+    'summary' => 'A devoted father, town planner and cooperative leader who lived for others. Read his story, share a memory and light a candle in his honour.',
+
     'scripture' => [
         'reference' => '2 Timothy 4 : 7',
         'text' => 'I have fought a good fight, I have finished my course,',
@@ -62,14 +67,27 @@ return [
     ],
 
     // 'tall' => true makes a photo take two rows in the gallery.
+    // Tall photos are cropped 5:8 and the others 4:3, so each fills its tile.
     'moments' => [
-        ['image' => 'images/moments/01.jpg', 'label' => '[Year]', 'caption' => '[Young Samson]', 'tall' => true],
-        ['image' => 'images/moments/02.jpg', 'label' => '[Year]', 'caption' => '[Wedding day]'],
-        ['image' => 'images/moments/03.jpg', 'label' => '[Year]', 'caption' => '[With the children]'],
-        ['image' => 'images/moments/04.jpg', 'label' => '[Year]', 'caption' => '[Preaching]', 'tall' => true],
-        ['image' => 'images/moments/05.jpg', 'label' => '[Year]', 'caption' => '[Family gathering]'],
-        ['image' => 'images/moments/06.jpg', 'label' => '[Year]', 'caption' => '[A favourite smile]'],
-        ['image' => 'images/moments/07.jpg', 'label' => '[Year]', 'caption' => '[Last photo together]'],
+        ['image' => 'images/moments/01.jpg', 'label' => 'Early years', 'caption' => 'Young and full of promise', 'tall' => true],
+        ['image' => 'images/moments/02.jpg', 'label' => 'Youth service', 'caption' => 'Serving the nation', 'tall' => true],
+        ['image' => 'images/moments/03.jpg', 'label' => 'Youth service', 'caption' => 'A corps member'],
+        ['image' => 'images/moments/04.jpg', 'label' => 'At work', 'caption' => 'At his desk, pen in hand', 'tall' => true],
+        ['image' => 'images/moments/05.jpg', 'label' => 'Family', 'caption' => 'A birthday at home'],
+        ['image' => 'images/moments/06.jpg', 'label' => 'The African Church', 'caption' => 'Called to serve', 'tall' => true],
+        ['image' => 'images/moments/07.jpg', 'label' => 'The African Church', 'caption' => 'Blessed for the work', 'tall' => true],
+        ['image' => 'images/moments/08.jpg', 'label' => 'Holy Land', 'caption' => 'On pilgrimage', 'tall' => true],
+        ['image' => 'images/moments/09.jpg', 'label' => 'Jerusalem', 'caption' => 'A pilgrim in the holy city', 'tall' => true],
+        ['image' => 'images/moments/10.jpg', 'label' => 'Holy Land', 'caption' => 'By the water', 'tall' => true],
+        ['image' => 'images/moments/11.jpg', 'label' => 'NULGE', 'caption' => 'Speaking to his members', 'tall' => true],
+        ['image' => 'images/moments/12.jpg', 'label' => 'NULGE Cooperative', 'caption' => 'Celebrating with the members', 'tall' => true],
+        ['image' => 'images/moments/13.jpg', 'label' => 'NULGE Cooperative', 'caption' => 'A quiet moment', 'tall' => true],
+        ['image' => 'images/moments/14.jpg', 'label' => 'Later years', 'caption' => 'Ever the gentleman', 'tall' => true],
+        ['image' => 'images/moments/15.jpg', 'label' => '2025', 'caption' => "Witnessing his son's wedding"],
+        ['image' => 'images/moments/17.jpg', 'label' => '2025', 'caption' => 'Father of the groom', 'tall' => true],
+        ['image' => 'images/moments/18.jpg', 'label' => '2025', 'caption' => 'Greeting the elders', 'tall' => true],
+        // Listed last so it fills the gap the tall photos above leave, keeping the grid's bottom edge even
+        ['image' => 'images/moments/16.jpg', 'label' => '2025', 'caption' => 'A proud father'],
     ],
 
     // Tributes written by the family. Visitors' messages (once approved)
@@ -84,20 +102,26 @@ return [
     'service' => [
         'burial_day' => 'Saturday',
         'burial_date' => '17 October 2026',
-        'time' => '[Time]',
-        'venue' => '[Venue name]',
-        'venue_area' => '[Town, State]',
+        'time' => '10:00 AM',
+        // The funeral service, then the interment
+        'venue' => 'Ebenezer African Church',
+        'venue_area' => 'Odo Oke, Iree, Osun State',
+        'interment' => 'His residence',
+        'interment_area' => 'Oja Bale, Igaa One, Off Campus, Iree, Osun State',
         'livestream_url' => null, // e.g. 'https://youtube.com/live/...'
     ],
 
     /*
-    | Music. Files live in public/audio and play in this order. Tracks whose
-    | file is missing are skipped automatically.
+    | Music. Files live in public/audio and play in a random order, shuffled
+    | afresh for each visit. Tracks whose file is missing are skipped
+    | automatically.
     */
     'music' => [
         ['title' => 'It Is Well With My Soul', 'note' => 'Hymn', 'file' => 'audio/it-is-well.mp3'],
         ['title' => 'Amaram Onyewem', 'note' => 'Mercy Chinwo ft. Pastor Jerry Eze', 'file' => 'audio/amaram-onyewem.mp3'],
         ['title' => "Ìjọba Ọ̀run (Mu Mi De'Le)", 'note' => 'Lara George', 'file' => 'audio/ijoba-orun.mp3'],
+        ['title' => 'Gone Too Soon', 'note' => 'Michael Jackson', 'file' => 'audio/gone-too-soon.mp3'],
+        ['title' => 'Logan Ti Ode', 'note' => 'Tope Alabi', 'file' => 'audio/logan-ti-ode.mp3'],
     ],
     'music_volume' => 0.55,
 
