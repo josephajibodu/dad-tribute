@@ -92,6 +92,9 @@
                 @endif
             </div>
 
+            @if (! empty($t['honorific']))
+                <p class="hero__honorific fade" style="--d:.75s">{{ $t['honorific'] }}</p>
+            @endif
             <h1 class="hero__name">
                 <span class="line"><span class="hw" style="--d:.9s">{{ $t['name']['first'] }}</span></span>
                 <span class="line"><span class="hw is-accent is-italic" style="--d:1.15s">{{ $t['name']['middle'] }}</span></span>
@@ -168,6 +171,15 @@
                         </article>
                     @endforeach
                 </div>
+                @if (! empty($t['who_quote']))
+                    <figure class="who-quote reveal">
+                        <blockquote>“{{ $t['who_quote']['text'] }}”</blockquote>
+                        <figcaption>
+                            <span class="tribute__name">{{ $t['who_quote']['name'] }}</span>
+                            <span class="tribute__relation">{{ $t['who_quote']['relation'] }}</span>
+                        </figcaption>
+                    </figure>
+                @endif
             </div>
         </section>
 

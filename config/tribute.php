@@ -22,6 +22,9 @@ return [
         'last' => 'Ajibodu',
     ],
 
+    // Shown in small capitals above his name, the way he was formally addressed.
+    'honorific' => 'Comrade · Evangelist · JP',
+
     'born' => '1969',
     'died' => '2026',
     'died_on' => '10 October 2026',
@@ -32,7 +35,7 @@ return [
     // What people see when the link is shared (WhatsApp, Facebook, X) and in search results.
     // The card is 1200 x 630; if it is missing, the portrait is shared instead.
     'share_image' => 'images/share-card.jpg',
-    'summary' => 'A devoted father, town planner and cooperative leader who lived for others. Read his story, share a memory and light a candle in his honour.',
+    'summary' => 'A devoted father, evangelist, town planner and cooperative leader who lived for others. Read his story, share a memory and light a candle in his honour.',
 
     'scripture' => [
         'reference' => '2 Timothy 4 : 7',
@@ -40,7 +43,7 @@ return [
         'emphasis' => 'I have kept the faith.',
     ],
 
-    'marquee' => ['Devoted father', 'Diligent in his work', 'Teacher of his children', 'Kind to the young and the old', 'Forever loved'],
+    'marquee' => ['Devoted father', 'Diligent in his work', 'Faithful servant of God', 'Teacher of his children', 'Builder of community', 'Kind to the young and the old', 'Forever loved'],
 
     'life' => [
         'heading' => 'A life poured out',
@@ -50,27 +53,35 @@ return [
             ['year' => '1969', 'title' => 'Born in Iree', 'body' => 'Born on 19 September 1969 into the Ajibodu family of Iree, in Boripe Local Government Area of Osun State.'],
             ['year' => '1974', 'title' => 'A hunger to learn', 'body' => "From C.A.C. Primary School, Ayepe-Olode, to St Peter's R.C.M. Grammar School, Olode, and then The Polytechnic, Ibadan, where he studied Quantity Surveying."],
             ['year' => '1991', 'title' => 'Public service', 'body' => 'He joined the Osun State Local Government Service at Ife South, Ifetedo, as an Assistant Town Planning Officer. Two years later he was named Best Worker of the Year.'],
-            ['year' => '2011', 'title' => 'Lifting others up', 'body' => 'As President of the NULGE Cooperative Society, Ife South, and later State President of the Osun State NULGE Cooperative Federation, he helped hundreds of workers save, borrow and build. His leadership was recognised with state awards.'],
+            ['year' => '2011', 'title' => 'Lifting others up', 'body' => 'He led the NULGE Cooperative at Ife South, about 580 workers strong. Together they gave loans to members, built a hall at Ifetedo, a guest inn at Olode and residential quarters, and were named Best Cooperative of the Year in 2009. In 2011 he became State President of the Osun State federation.'],
+            ['year' => '2012', 'title' => 'Building community', 'body' => 'Beyond the office, he served as General Secretary of the Ife South Community Development Council and Project Coordinator for the Osun State council, and gave his time, money and skill to community associations in Ifetedo.'],
             ['year' => '2019', 'title' => 'Never done growing', 'body' => 'While working, he kept studying: an HND in Quantity Surveying, then an HND and a Postgraduate Diploma in Urban and Regional Planning. He became a registered Town Planner in 2019.'],
             ['year' => 'Home', 'title' => 'Our first teacher', 'body' => 'He taught his own children mathematics and physics at home, and wanted every one of us to go as far in education as we possibly could.'],
-            ['year' => 'Faith', 'title' => 'Service in the church', 'body' => 'A man of quiet faith, he served The African Church for many years as a lay reader, preacher and church warden.'],
-            ['year' => '2026', 'title' => 'Called home', 'body' => 'He retired as Head of the Town Planning Division in August 2026 after 35 years of service, and went to be with the Lord on Saturday, 10 October 2026.'],
+            ['year' => 'Faith', 'title' => 'Faith and service', 'body' => "Ordained a lay reader and preacher in 1996 and an Evangelist in 2005, he served The African Church as Gbesinro of St Michael's, Ifetedo, and church warden at St John's, Olode-Ife. He also made the pilgrimage to Jerusalem, earning the title JP."],
+            ['year' => '2026', 'title' => 'Called home', 'body' => 'He retired as Head of the Town Planning Division on 15 August 2026, after 35 years of service. Less than two months later, after a brief illness, he went to be with the Lord on Saturday, 10 October 2026, aged 57.'],
         ],
     ],
 
     // "Who he was": a few things about him, in the family's words.
     'traits' => [
         ['title' => 'A people\'s person', 'body' => 'He was kind to everyone around him: the young and the old, friends, and even those who were not. People came to him for help, and he rarely sent anyone away.'],
-        ['title' => 'Diligent at work', 'body' => 'For 35 years he gave his best to public service and to the cooperative movement, and he was honoured for both.'],
+        ['title' => 'Diligent at work', 'body' => 'For 35 years he gave his best to public service and to the cooperative movement, and he was honoured for both. At Ife South his colleagues simply called him "Aare".'],
         ['title' => 'A teacher at heart', 'body' => 'He was brilliant, and he loved to pass it on. Many evenings were spent teaching his children, because he believed education was the best gift he could give us.'],
         ['title' => 'The one who held us together', 'body' => 'Though he was the youngest, he became the one the wider family gathered around, the person who kept everyone connected.'],
+    ],
+
+    // Shown beneath the traits, from the condolence register.
+    'who_quote' => [
+        'text' => 'The smile of a person who comes to him for help is always his joy.',
+        'name' => 'Chief Akin Ajiboso',
+        'relation' => 'Balogun Afayese of Ifetedoland',
     ],
 
     // 'tall' => true makes a photo take two rows in the gallery.
     // Tall photos are cropped 5:8 and the others 4:3, so each fills its tile.
     'moments' => [
         ['image' => 'images/moments/01.jpg', 'label' => 'Early years', 'caption' => 'Young and full of promise', 'tall' => true],
-        ['image' => 'images/moments/02.jpg', 'label' => 'Youth service', 'caption' => 'Serving the nation', 'tall' => true],
+        ['image' => 'images/moments/02.jpg', 'label' => 'Youth service', 'caption' => 'Serving the nation in Owerri', 'tall' => true],
         ['image' => 'images/moments/03.jpg', 'label' => 'Youth service', 'caption' => 'A corps member'],
         ['image' => 'images/moments/04.jpg', 'label' => 'At work', 'caption' => 'At his desk, pen in hand', 'tall' => true],
         ['image' => 'images/moments/05.jpg', 'label' => 'Family', 'caption' => 'A birthday at home'],
