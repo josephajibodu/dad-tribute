@@ -109,7 +109,7 @@ return [
             'name' => 'Joseph Ajibodu',
             'relation' => 'First son',
             'title' => 'A Tribute to My Dad',
-            'excerpt' => "My dad really wanted me to become a doctor. As I watched him go through his illness, I found myself wondering whether things might have been different if I had. Perhaps I would have been able to help him in ways I couldn't. And God knows best.",
+            'excerpt' => "My dad really wanted me to become a doctor. As I watched him go through his illness, I found myself wondering whether things might have been different if I had. Perhaps I would have been able to help him in ways I couldn't.",
             'text' => <<<'TEXT'
                 There are some memories that stay with you for a lifetime, and there are people whose impact on your life can never truly be separated from who you become. For me, my dad was that person.
 
