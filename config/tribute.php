@@ -170,7 +170,6 @@ return [
                 Rest well, Dad. ❤️
                 TEXT,
         ],
-        ['text' => '[Tribute from his wife]', 'name' => '[Name]', 'relation' => 'Wife'],
         [
             'name' => 'Larry Ajibodu',
             'relation' => 'Son',
@@ -206,7 +205,32 @@ return [
                 Sleep well, my king. Until we meet again, may your gentle soul rest in perfect peace. I love you, Dad, today, tomorrow, and always. ❤️🕊️
                 TEXT,
         ],
-        ['text' => '[Tribute from a church member or friend]', 'name' => '[Name]', 'relation' => '[Relationship]'],
+        [
+            'name' => 'Comr. Samuel Aderanti',
+            'relation' => 'NULGE State Welfare Officer, Osun State',
+            'title' => 'TRIBUTE TO COM. EVANG. SAMSON TOYIN AJIBODU',
+            'excerpt' => 'So soon, boss! We cannot question God. Your lifetime was an exemplary one in terms of service to humanity, and your legacy as a Cooperator will be difficult for anyone to fill.',
+            'text' => <<<'TEXT'
+                So soon, boss! We cannot question God. Alapa dupe!
+
+                A Cooperator per excellence, Com. Evang. Samson Toyin Ajibodu, joined the Local Government Service in the year 1991 and retired meritoriously on 15th August, 2026.
+
+                Less than 2 months after you dropped the pen from the Local Government Service of Osun State, the news of your sudden death through a brief illness came to us as a rude shock.
+
+                Your lifetime was an exemplary one in terms of service to humanity, and your legacy as a Cooperator will be difficult for anyone to fill. Amongst your positions are:
+
+                1. President, NULGE Cooperative, Ife South LG
+                2. State President, NULGE Cooperative Society, Osun State
+                3. Vice President, Ife South / Ifetedo (Latiri) Cooperative
+                4. Warden, St. John's African Church, Olode, etc.
+
+                Your death is painful and hard to believe. You were humble and friendly indeed.
+
+                Sun re o! Com. Evang. Samson Toyin Ajibodu.
+
+                Rest in perfect peace.
+                TEXT,
+        ],
     ],
 
     'service' => [

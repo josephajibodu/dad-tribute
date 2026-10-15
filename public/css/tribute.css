@@ -434,6 +434,9 @@ body.lightbox-open { overflow: hidden; }
 .reader__text { font-family: var(--serif); font-size: 22px; line-height: 1.6; color: var(--ivory-2); }
 .reader__text > p { margin: 0 0 1em; }
 .reader__text > :last-child { margin-bottom: 0; }
+.reader__text > ol { margin: 0 0 1em; padding-left: 1.4em; }
+.reader__text li + li { margin-top: .3em; }
+.reader__text li::marker { color: var(--gold); }
 .reader__text strong { font-weight: 500; color: var(--ivory); }
 .reader__text--plain { margin: 0; white-space: pre-line; }
 .reader .tribute__by { padding-top: 28px; border-top: 1px solid var(--line); }
