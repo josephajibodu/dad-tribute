@@ -206,6 +206,57 @@ return [
                 TEXT,
         ],
         [
+            'name' => 'Fadekemi Ajibodu',
+            'relation' => 'Daughter',
+            'title' => 'MY DADDY, MY HEART 💔🕊️',
+            'excerpt' => 'I remember how you would eat and still make sure to leave meat for me. 🥺❤️ Something as little as that, but it meant so much. Your little girl will miss you in ways words can never explain.',
+            'text' => <<<'TEXT'
+                Daddy, where do I even begin? How do I put into words the pain of losing you? How do I accept that I have to live in a world where I can no longer see your face, hear your voice, or experience your beautiful smile?
+
+                Daddy, there are so many little things about you that I will never forget. I remember how you would eat and still make sure to leave meat for me. 🥺❤️ Something as little as that, but it meant so much. You always wanted to make sure your daughter had something to eat. You cared about me in ways that I probably didn't fully understand until now.
+
+                I will never forget your smile, Daddy. That beautiful smile you gave me, the one that could make my heart feel at home. I wish I could see it one more time. If I knew the last time I saw you would be the last, I would have held on to that moment a little longer.
+
+                Your kindness was something special. It wasn't just towards me; you extended it to the people around you. You had a heart that cared, a heart that gave, and a heart that wanted others to be okay. Daddy, you were so much more than a father to me. You were a beautiful soul, and the love you gave will never be forgotten.
+
+                Daddy, one thing I will always be grateful for is how seriously you took my education. Anything concerning my schooling, any payment we were asked to make, you would send the money in minutes. You never played with my education. You made sure I had what I needed, and you did it without making me beg or worry for too long. Looking back now, I realise how much love was in those little actions. You wanted to see me succeed, Daddy, and I wish you could stay long enough to see everything I will become. 🥺💔
+
+                And Daddy, whenever you were going out, you would always leave money for me. 😭❤️ Those little things you did so effortlessly are now the memories I would give anything to experience again. You were always thinking of me, always finding little ways to show your love. I never knew I would miss these things this much.
+
+                Daddy, I prayed for your healing. I hoped for more time with you. I wanted you to get better. I wanted more memories, more smiles, more conversations, and more of those little moments that I now realise were everything.
+
+                I wasn't ready for this, Daddy. I don't think I could ever have been ready to lose you.
+
+                Thank you for loving me in your own beautiful way. Thank you for your kindness. Thank you for always thinking of me, even in the smallest things. Thank you for being my father.
+
+                I wish I could tell you one more time how much I love you. I wish I could see that smile again. I wish I could have just one more day with you.
+
+                Rest well, Daddy. 🕊️❤️
+
+                Your little girl will miss you in ways words can never explain. I will carry your love, your kindness, your smile, and every beautiful memory of you for as long as I live.
+
+                I love you, Daddy. Always and forever. Until we meet again 🫂💔
+                TEXT,
+        ],
+        [
+            'name' => 'Esther Ajibodu',
+            'relation' => 'Daughter-in-law',
+            'excerpt' => 'I will always remember you, Daddy. And when the time comes, I will tell your grandchildren about you, so they can know the man you were even if they never got the chance to meet you.',
+            'text' => <<<'TEXT'
+                A man is, in many ways, a reflection of the people who raised him. And I know that, in many ways, I have you to thank for the man Joseph is today. Although we did not have many years together, I have had the privilege of experiencing a part of who you are through your son. In him, I see a glimpse of the man who raised him, and for that, I am grateful.
+
+                I will always remember the warmth with which you welcomed me when we first met and the generosity you showed me. Thank you for making me feel welcome and for the kindness you extended to me. Those are memories I will always hold dear.
+
+                You lived a life of impact. And although your time here feels short to us, we know that God alone is the judge of a life. We may not understand why you had to leave when you did, but we trust Him with what we cannot understand. What remains is the life you lived and the legacy you leave behind.
+
+                I will always remember you, Daddy. And when the time comes, I will tell your grandchildren about you, so they can know the man you were even if they never got the chance to meet you. Your memories will live on through us, and your legacy will continue through the generations after you.
+
+                Sun re o, Daddy. ❤️
+
+                From Auntie.
+                TEXT,
+        ],
+        [
             'name' => 'Comr. Samuel Aderanti',
             'relation' => 'NULGE State Welfare Officer, Osun State',
             'title' => 'TRIBUTE TO COM. EVANG. SAMSON TOYIN AJIBODU',
