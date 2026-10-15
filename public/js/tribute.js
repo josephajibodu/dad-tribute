@@ -231,6 +231,42 @@
     }
 
     /* ------------------------------------------------------------------
+       Tribute reader: long tributes open in full in a popup
+       ------------------------------------------------------------------ */
+
+    var reader = document.querySelector('[data-reader]');
+    if (reader && typeof reader.showModal === 'function') {
+        var readerBody = reader.querySelector('[data-reader-body]');
+        var readerBy = reader.querySelector('[data-reader-by]');
+        var readerOpener = null;
+
+        document.querySelectorAll('[data-reader-open]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var tribute = button.closest('.tribute');
+                readerOpener = button;
+                readerBody.replaceChildren(tribute.querySelector('[data-reader-content]').content.cloneNode(true));
+                readerBy.innerHTML = tribute.querySelector('.tribute__by').innerHTML;
+                reader.setAttribute('aria-label', 'Tribute from ' + tribute.querySelector('.tribute__name').textContent);
+                reader.showModal();
+                reader.scrollTop = 0;
+                body.classList.add('reader-open');
+            });
+        });
+        reader.querySelector('[data-reader-close]').addEventListener('click', function () { reader.close(); });
+        // A tap on the dark space either side of the text closes it too
+        reader.addEventListener('click', function (e) {
+            if (e.target === reader) reader.close();
+        });
+        reader.addEventListener('close', function () {
+            body.classList.remove('reader-open');
+            if (readerOpener) { try { readerOpener.focus({ preventScroll: true }); } catch (err) {} }
+        });
+    } else if (reader) {
+        // Without <dialog> support the full text is out of reach, so drop the links
+        document.querySelectorAll('[data-reader-open]').forEach(function (button) { button.remove(); });
+    }
+
+    /* ------------------------------------------------------------------
        Photo viewer
        ------------------------------------------------------------------ */
 

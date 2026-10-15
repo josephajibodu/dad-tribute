@@ -220,10 +220,19 @@
                     </div>
                 </div>
                 <div class="tribute-grid">
-                    @foreach ($t['family_tributes'] as $tr)
+                    @foreach ($familyTributes as $tr)
                         <article class="tribute reveal">
                             <span class="quote-mark" aria-hidden="true">“</span>
-                            <p class="tribute__text">{{ $tr['text'] }}</p>
+                            <p class="tribute__text">{{ $tr['excerpt'] ?? $tr['text'] }}</p>
+                            @if ($tr['full'])
+                                <button type="button" class="tribute__more" data-reader-open>Read the full tribute</button>
+                                <template data-reader-content>
+                                    @if (! empty($tr['title']))
+                                        <h3 class="reader__title">{{ $tr['title'] }}</h3>
+                                    @endif
+                                    <div class="reader__text">{!! $tr['full'] !!}</div>
+                                </template>
+                            @endif
                             <div class="tribute__by">
                                 <span class="tribute__name">{{ $tr['name'] }}</span>
                                 <span class="tribute__relation">{{ $tr['relation'] }}</span>
@@ -231,9 +240,16 @@
                         </article>
                     @endforeach
                     @foreach ($visitorTributes as $tr)
+                        @php($excerpt = Str::words($tr->message, 60, '…'))
                         <article class="tribute tribute--visitor reveal">
                             <span class="quote-mark" aria-hidden="true">“</span>
-                            <p class="tribute__text">{{ $tr->message }}</p>
+                            <p class="tribute__text">{{ $excerpt }}</p>
+                            @if ($excerpt !== $tr->message)
+                                <button type="button" class="tribute__more" data-reader-open>Read more</button>
+                                <template data-reader-content>
+                                    <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
+                                </template>
+                            @endif
                             <div class="tribute__by">
                                 <span class="tribute__name">{{ $tr->name }}</span>
                                 @if ($tr->relation)
@@ -364,6 +380,18 @@
             <p class="footer-note">{{ $t['footer'] }} · {{ $t['died'] }}</p>
         </footer>
     </div>
+
+    {{-- TRIBUTE READER (opens when "Read the full tribute" is tapped) --}}
+    <dialog class="reader" data-reader aria-label="Tribute">
+        <button type="button" class="icon-btn reader__close" data-reader-close aria-label="Close tribute">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+        </button>
+        <div class="reader__inner">
+            <span class="quote-mark" aria-hidden="true">“</span>
+            <div data-reader-body></div>
+            <div class="tribute__by" data-reader-by></div>
+        </div>
+    </dialog>
 
     {{-- PHOTO VIEWER (opens when a gallery photo is tapped) --}}
     @if ($moments->whereNotNull('src')->isNotEmpty())

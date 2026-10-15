@@ -7,6 +7,7 @@ use App\Models\Tribute;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class TributeController extends Controller
@@ -33,6 +34,9 @@ class TributeController extends Controller
             'shareImage' => $this->shareImage($config),
             'moments' => collect($config['moments'] ?? [])->map(fn (array $m) => $m + [
                 'src' => $this->imageOrNull($m['image'] ?? null),
+            ]),
+            'familyTributes' => collect($config['family_tributes'] ?? [])->map(fn (array $tribute) => $tribute + [
+                'full' => isset($tribute['excerpt']) ? $this->tributeHtml($tribute['text']) : null,
             ]),
             'visitorTributes' => $hasTable
                 ? Tribute::approved()->whereNotNull('message')->where('message', '!=', '')->latest('approved_at')->limit(60)->get()
@@ -66,6 +70,18 @@ class TributeController extends Controller
         }
 
         return redirect()->to(route('tribute').'#candle')->with('lit', $thanks);
+    }
+
+    /**
+     * A family tribute's full text, written in Markdown, with its line breaks kept so poems read as written.
+     */
+    private function tributeHtml(string $markdown): string
+    {
+        return Str::markdown($markdown, [
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+            'renderer' => ['soft_break' => "<br>\n"],
+        ]);
     }
 
     private function imageOrNull(?string $path): ?string
