@@ -74,7 +74,7 @@ return [
     'who_quote' => [
         'text' => 'The smile of a person who comes to him for help is always his joy.',
         'name' => 'Chief Akin Ajiboso',
-        'relation' => 'Balogun Afayese of Ifetedoland',
+        'relation' => 'Balogun Atayese of Ifetedoland',
     ],
 
     // 'tall' => true makes a photo take two rows in the gallery.
