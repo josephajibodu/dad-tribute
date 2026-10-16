@@ -252,16 +252,15 @@
                         </div>
                         <div class="tribute-grid">
                             @foreach ($visitorTributes as $tr)
-                                @php($excerpt = Str::words($tr->message, 60, '…'))
+                                @php($excerpt = Str::words($tr->message, 40, '…'))
                                 <article class="tribute tribute--visitor reveal" data-message>
                                     <span class="quote-mark" aria-hidden="true">“</span>
-                                    <p class="tribute__text">{{ $excerpt }}</p>
-                                    @if ($excerpt !== $tr->message)
-                                        <button type="button" class="tribute__more" data-reader-open>Read more</button>
-                                        <template data-reader-content>
-                                            <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
-                                        </template>
-                                    @endif
+                                    <p class="tribute__text" data-clamp>{{ $excerpt }}</p>
+                                    {{-- Shown when the words were cut short here, or when the page cuts the preview to four lines --}}
+                                    <button type="button" class="tribute__more" data-reader-open @if ($excerpt === $tr->message) hidden @endif>Read more</button>
+                                    <template data-reader-content>
+                                        <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
+                                    </template>
                                     <div class="tribute__by">
                                         <span class="tribute__name">{{ $tr->name }}</span>
                                         @if ($tr->relation)

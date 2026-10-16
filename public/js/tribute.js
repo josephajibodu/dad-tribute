@@ -234,6 +234,17 @@
        Visitors' messages: a few at first, more as the visitor asks
        ------------------------------------------------------------------ */
 
+    // Offer "Read more" on any preview the four-line limit has cut short
+    function markClamped() {
+        document.querySelectorAll('[data-clamp]').forEach(function (text) {
+            var more = text.parentNode.querySelector('[data-reader-open]');
+            if (more && more.hidden && text.offsetParent && text.scrollHeight > text.clientHeight + 2) more.hidden = false;
+        });
+    }
+    markClamped();
+    window.addEventListener('resize', markClamped);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(markClamped);
+
     var moreMessages = document.querySelector('[data-messages-more]');
     if (moreMessages) {
         var messageBatch = 6;
@@ -248,6 +259,7 @@
                     m.style.setProperty('--d', (i % 3) * 0.08 + 's');
                     m.hidden = false;
                 });
+                markClamped();
                 if (!waiting.length) {
                     // The button is gone, so keep keyboard users where the new messages begin
                     moreMessages.hidden = true;

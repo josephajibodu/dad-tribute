@@ -420,6 +420,9 @@ body.lightbox-open { overflow: hidden; }
 .messages__title { margin: 0; font-family: var(--serif); font-weight: 300; font-size: clamp(34px, 4.2vw, 60px); line-height: 1.04; }
 .tribute--visitor { padding: 40px 0 44px; gap: 22px; }
 .tribute--visitor .quote-mark { font-size: 72px; height: 30px; opacity: .75; }
+/* A short preview: four lines at most, the rest opens in the reader */
+.tribute--visitor .tribute__text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
+.tribute--visitor .tribute__more[hidden] { display: none; }
 .messages__more { display: flex; justify-content: center; margin-top: 56px; }
 .tribute[hidden], .messages__more [hidden] { display: none; }
 .tribute--visitor:focus { outline: none; }

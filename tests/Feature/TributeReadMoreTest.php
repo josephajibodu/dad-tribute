@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Tribute;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class TributeReadMoreTest extends TestCase
@@ -67,9 +68,9 @@ class TributeReadMoreTest extends TestCase
 
         $response = $this->get(route('tribute'));
 
-        $response->assertSee('Read more');
+        $response->assertSee('<button type="button" class="tribute__more" data-reader-open >Read more</button>', false);
+        $response->assertSee('<p class="tribute__text" data-clamp>'.Str::words($message, 40, '…').'</p>', false);
         $response->assertSee('<p class="reader__text reader__text--plain">'.$message.'</p>', false);
-        $response->assertDontSee('<p class="tribute__text">'.$message.'</p>', false);
     }
 
     public function test_a_short_visitor_message_shows_in_full(): void
@@ -79,7 +80,7 @@ class TributeReadMoreTest extends TestCase
 
         $response = $this->get(route('tribute'));
 
-        $response->assertSee('<p class="tribute__text">Rest well, sir.</p>', false);
-        $response->assertDontSee('data-reader-open', false);
+        $response->assertSee('<p class="tribute__text" data-clamp>Rest well, sir.</p>', false);
+        $response->assertSee('data-reader-open  hidden >Read more</button>', false);
     }
 }
