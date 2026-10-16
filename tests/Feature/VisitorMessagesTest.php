@@ -53,7 +53,9 @@ class VisitorMessagesTest extends TestCase
 
         $response = $this->get(route('tribute'));
 
-        $response->assertSeeInOrder(['Message number 69.', 'Message number 68.', 'Message number 0.']);
+        $response->assertSeeInOrder(['data-message-track', 'Message number 69.', 'Message number 68.', 'Message number 0.'], false);
+        $this->assertSame(70, substr_count($response->getContent(), 'data-message>'));
+        $response->assertDontSee('Read more messages');
     }
 
     public function test_visitor_messages_are_escaped_on_the_tribute_page(): void

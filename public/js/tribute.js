@@ -231,7 +231,7 @@
     }
 
     /* ------------------------------------------------------------------
-       Visitors' messages: a few at first, more as the visitor asks
+       Visitors' messages: one row that drifts by and waits for the reader
        ------------------------------------------------------------------ */
 
     // Offer "Read more" on any preview the four-line limit has cut short
@@ -245,29 +245,60 @@
     window.addEventListener('resize', markClamped);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(markClamped);
 
-    var moreMessages = document.querySelector('[data-messages-more]');
-    if (moreMessages) {
-        var messageBatch = 6;
-        var waiting = Array.prototype.slice.call(document.querySelectorAll('[data-message]'), messageBatch);
-        waiting.forEach(function (m) { m.hidden = true; });
+    var messageRow = document.querySelector('[data-message-row]');
+    var track = messageRow && messageRow.querySelector('[data-message-track]');
+    if (track && !reduceMotion && track.scrollWidth > track.clientWidth + 4) {
+        var cards = Array.prototype.slice.call(track.children);
+        var speed = 26; // pixels a second: slow enough to read as it passes
+        var position = 0, loopWidth = 0, lastFrame = null, resumeTimer = null;
+        var hovering = false, focused = false, touching = false, onScreen = true;
 
-        if (waiting.length) {
-            moreMessages.hidden = false;
-            moreMessages.addEventListener('click', function () {
-                var next = waiting.splice(0, messageBatch);
-                next.forEach(function (m, i) {
-                    m.style.setProperty('--d', (i % 3) * 0.08 + 's');
-                    m.hidden = false;
-                });
-                markClamped();
-                if (!waiting.length) {
-                    // The button is gone, so keep keyboard users where the new messages begin
-                    moreMessages.hidden = true;
-                    next[0].setAttribute('tabindex', '-1');
-                    try { next[0].focus({ preventScroll: true }); } catch (err) {}
-                }
-            });
+        // A second copy follows the first so the row can loop without a gap
+        cards.forEach(function (card) {
+            var copy = card.cloneNode(true);
+            copy.setAttribute('aria-hidden', 'true');
+            copy.removeAttribute('data-message');
+            copy.querySelectorAll('button').forEach(function (b) { b.tabIndex = -1; });
+            track.appendChild(copy);
+        });
+
+        var measure = function () { loopWidth = track.children[cards.length].offsetLeft - cards[0].offsetLeft; };
+        measure();
+        window.addEventListener('resize', measure);
+
+        // Wait while the visitor points at it, tabs through it, or swipes it themselves
+        messageRow.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hovering = true; });
+        messageRow.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hovering = false; });
+        // Only keyboard focus holds it still, so a clicked "Read more" doesn't keep it paused after the reader closes
+        track.addEventListener('focusin', function (e) {
+            try { focused = e.target.matches(':focus-visible'); } catch (err) { focused = true; }
+        });
+        track.addEventListener('focusout', function () { focused = false; });
+        track.addEventListener('touchstart', function () { touching = true; clearTimeout(resumeTimer); }, { passive: true });
+        track.addEventListener('touchend', function () {
+            clearTimeout(resumeTimer);
+            resumeTimer = setTimeout(function () { touching = false; }, 3000);
+        }, { passive: true });
+        track.addEventListener('scroll', function () {
+            if (Math.abs(track.scrollLeft - position) > 2) position = track.scrollLeft;
+        }, { passive: true });
+
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }).observe(messageRow);
         }
+
+        var drift = function (now) {
+            var seconds = lastFrame === null ? 0 : Math.min(now - lastFrame, 250) / 1000;
+            lastFrame = now;
+            // body.reader-open: a message is open in the reader
+            if (!(hovering || focused || touching || !onScreen || body.classList.contains('reader-open'))) {
+                position += speed * seconds;
+            }
+            if (loopWidth > 0 && position >= loopWidth) position -= loopWidth;
+            if (Math.abs(track.scrollLeft - position) >= 0.5) track.scrollLeft = position;
+            window.requestAnimationFrame(drift);
+        };
+        window.requestAnimationFrame(drift);
     }
 
     /* ------------------------------------------------------------------
