@@ -16,6 +16,9 @@ Route::get('/admin/login', [AdminSessionController::class, 'create'])->name('adm
 Route::post('/admin/login', [AdminSessionController::class, 'store'])->name('admin.login.store');
 Route::post('/admin/logout', [AdminSessionController::class, 'destroy'])->name('admin.logout');
 
-Route::get('/admin/tributes', [AdminTributeController::class, 'index'])
-    ->middleware(EnsureAdminIsSignedIn::class)
-    ->name('admin.tributes');
+Route::middleware(EnsureAdminIsSignedIn::class)->group(function () {
+    Route::get('/admin/tributes', [AdminTributeController::class, 'index'])->name('admin.tributes');
+    Route::post('/admin/tributes/{tribute}/approval', [AdminTributeController::class, 'approve'])->name('admin.tributes.approve');
+    Route::delete('/admin/tributes/{tribute}/approval', [AdminTributeController::class, 'unapprove'])->name('admin.tributes.unapprove');
+    Route::delete('/admin/tributes/{tribute}', [AdminTributeController::class, 'destroy'])->name('admin.tributes.destroy');
+});

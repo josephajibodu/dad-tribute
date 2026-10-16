@@ -59,6 +59,24 @@
         .tribute__date { color: var(--faint); font-size: .85rem; margin-left: auto; }
         .tribute__message { margin: 10px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
         .tribute__empty { margin: 10px 0 0; color: var(--faint); font-style: italic; }
+        .tribute { transition: opacity .6s ease .3s; }
+        .tribute.is-leaving { opacity: 0; }
+
+        .tribute__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .tribute__actions form { margin: 0; }
+        .tribute__actions form:last-child { margin-left: auto; }
+        .action {
+            font: inherit; font-size: .85rem; cursor: pointer; min-height: 36px;
+            border: 1px solid var(--line); border-radius: 6px; padding: 6px 14px;
+            background: transparent; color: var(--muted);
+        }
+        .action:hover { border-color: var(--muted); color: var(--ivory); }
+        .action--primary { border-color: var(--gold); background: var(--gold); color: var(--ink); font-weight: 600; }
+        .action--primary:hover { border-color: #E4C98F; background: #E4C98F; color: var(--ink); }
+        .action--danger:hover { border-color: #E58C7A; color: #E58C7A; }
+        .action:disabled { opacity: .5; cursor: progress; }
+
+        .flash { min-height: 1.5em; margin: 0 0 16px; color: var(--gold); font-size: .9rem; }
 
         .badge { font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; border-radius: 4px; padding: 2px 8px; border: 1px solid var(--line); color: var(--muted); }
         .badge--pending { border-color: var(--gold); color: var(--gold); }

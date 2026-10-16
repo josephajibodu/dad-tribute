@@ -39,7 +39,7 @@ class TributeController extends Controller
                 'full' => isset($tribute['excerpt']) ? $this->tributeHtml($tribute['text']) : null,
             ]),
             'visitorTributes' => $hasTable
-                ? Tribute::approved()->whereNotNull('message')->where('message', '!=', '')->latest('approved_at')->limit(60)->get()
+                ? Tribute::approved()->whereNotNull('message')->where('message', '!=', '')->latest('approved_at')->get()
                 : collect(),
             'candleCount' => $hasTable ? Tribute::count() : 0,
         ]);

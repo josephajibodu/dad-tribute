@@ -127,6 +127,96 @@ class AdminTributesTest extends TestCase
         $response->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false);
     }
 
+    public function test_approving_a_message_shows_it_on_the_tribute_page(): void
+    {
+        $tribute = Tribute::factory()->create(['name' => 'Waiting Visitor', 'message' => 'Rest well, sir.']);
+
+        $this->get(route('tribute'))->assertDontSee('Rest well, sir.');
+
+        $response = $this->withSession(['admin_signed_in' => true])
+            ->from(route('admin.tributes', ['show' => 'pending']))
+            ->post(route('admin.tributes.approve', $tribute));
+
+        $response->assertRedirect(route('admin.tributes', ['show' => 'pending']));
+        $response->assertSessionHas('status', "Waiting Visitor's message now shows on the tribute page.");
+        $this->assertNotNull($tribute->fresh()->approved_at);
+        $this->get(route('tribute'))->assertSee('Rest well, sir.');
+    }
+
+    public function test_approving_from_the_page_returns_the_redrawn_tribute_and_new_totals(): void
+    {
+        $tribute = Tribute::factory()->create(['message' => 'Rest well, sir.']);
+        Tribute::factory()->create(['message' => 'Still waiting.']);
+        Tribute::factory()->candleOnly()->create();
+
+        $response = $this->withSession(['admin_signed_in' => true])
+            ->postJson(route('admin.tributes.approve', $tribute));
+
+        $response->assertOk();
+        $response->assertJson(['counts' => ['candles' => 3, 'messages' => 2, 'pending' => 1]]);
+        $this->assertStringContainsString('data-status="approved"', $response->json('html'));
+        $this->assertStringContainsString('Hide from page', $response->json('html'));
+    }
+
+    public function test_approving_twice_keeps_the_first_approval_time(): void
+    {
+        $tribute = Tribute::factory()->create(['approved_at' => now()->subDay()]);
+        $approvedAt = $tribute->approved_at;
+
+        $this->withSession(['admin_signed_in' => true])->post(route('admin.tributes.approve', $tribute));
+
+        $this->assertTrue($tribute->fresh()->approved_at->equalTo($approvedAt));
+    }
+
+    public function test_hiding_a_message_takes_it_off_the_tribute_page(): void
+    {
+        $tribute = Tribute::factory()->approved()->create(['message' => 'A great man.']);
+
+        $this->withSession(['admin_signed_in' => true])
+            ->deleteJson(route('admin.tributes.unapprove', $tribute))
+            ->assertOk()
+            ->assertJson(['counts' => ['pending' => 1]]);
+
+        $this->assertNull($tribute->fresh()->approved_at);
+        $this->get(route('tribute'))->assertDontSee('A great man.');
+    }
+
+    public function test_removing_a_tribute_deletes_it(): void
+    {
+        $tribute = Tribute::factory()->approved()->create();
+
+        $response = $this->withSession(['admin_signed_in' => true])->deleteJson(route('admin.tributes.destroy', $tribute));
+
+        $response->assertOk();
+        $response->assertJson(['html' => null, 'counts' => ['candles' => 0]]);
+        $this->assertModelMissing($tribute);
+    }
+
+    public function test_the_list_offers_the_right_actions_for_each_tribute(): void
+    {
+        $waiting = Tribute::factory()->create();
+        $shown = Tribute::factory()->approved()->create();
+        $candle = Tribute::factory()->candleOnly()->create();
+
+        $response = $this->withSession(['admin_signed_in' => true])->get(route('admin.tributes'));
+
+        $response->assertSee('action="'.route('admin.tributes.approve', $waiting).'"', false);
+        $response->assertSee('action="'.route('admin.tributes.unapprove', $shown).'"', false);
+        $response->assertDontSee('action="'.route('admin.tributes.approve', $candle).'"', false);
+        $response->assertSee('action="'.route('admin.tributes.destroy', $candle).'"', false);
+    }
+
+    public function test_tributes_cannot_be_changed_without_signing_in(): void
+    {
+        $tribute = Tribute::factory()->create();
+
+        $this->post(route('admin.tributes.approve', $tribute))->assertRedirect(route('admin.login'));
+        $this->delete(route('admin.tributes.unapprove', $tribute))->assertRedirect(route('admin.login'));
+        $this->delete(route('admin.tributes.destroy', $tribute))->assertRedirect(route('admin.login'));
+
+        $this->assertNull($tribute->fresh()->approved_at);
+    }
+
     public function test_the_tribute_page_does_not_link_to_the_admin_pages(): void
     {
         $response = $this->get(route('tribute'));

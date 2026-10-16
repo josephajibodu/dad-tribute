@@ -239,26 +239,43 @@
                             </div>
                         </article>
                     @endforeach
-                    @foreach ($visitorTributes as $tr)
-                        @php($excerpt = Str::words($tr->message, 60, '…'))
-                        <article class="tribute tribute--visitor reveal">
-                            <span class="quote-mark" aria-hidden="true">“</span>
-                            <p class="tribute__text">{{ $excerpt }}</p>
-                            @if ($excerpt !== $tr->message)
-                                <button type="button" class="tribute__more" data-reader-open>Read more</button>
-                                <template data-reader-content>
-                                    <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
-                                </template>
-                            @endif
-                            <div class="tribute__by">
-                                <span class="tribute__name">{{ $tr->name }}</span>
-                                @if ($tr->relation)
-                                    <span class="tribute__relation">{{ $tr->relation }}</span>
-                                @endif
-                            </div>
-                        </article>
-                    @endforeach
                 </div>
+
+                @if ($visitorTributes->isNotEmpty())
+                    <div id="messages" class="messages" data-messages>
+                        <div class="section-head reveal">
+                            <div>
+                                <p class="eyebrow">From friends &amp; visitors</p>
+                                <h3 class="messages__title">Words left <em>by candlelight.</em></h3>
+                            </div>
+                            <p class="muted">{{ $visitorTributes->count() === 1 ? 'A message' : number_format($visitorTributes->count()).' messages' }} from those who lit a candle in his memory.</p>
+                        </div>
+                        <div class="tribute-grid">
+                            @foreach ($visitorTributes as $tr)
+                                @php($excerpt = Str::words($tr->message, 60, '…'))
+                                <article class="tribute tribute--visitor reveal" data-message>
+                                    <span class="quote-mark" aria-hidden="true">“</span>
+                                    <p class="tribute__text">{{ $excerpt }}</p>
+                                    @if ($excerpt !== $tr->message)
+                                        <button type="button" class="tribute__more" data-reader-open>Read more</button>
+                                        <template data-reader-content>
+                                            <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
+                                        </template>
+                                    @endif
+                                    <div class="tribute__by">
+                                        <span class="tribute__name">{{ $tr->name }}</span>
+                                        @if ($tr->relation)
+                                            <span class="tribute__relation">{{ $tr->relation }}</span>
+                                        @endif
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                        <div class="messages__more">
+                            <button type="button" class="btn btn--ghost" data-messages-more hidden>Read more messages</button>
+                        </div>
+                    </div>
+                @endif
             </div>
         </section>
 
@@ -321,6 +338,9 @@
                     <p class="eyebrow">06 · Remember Him</p>
                     <h2 class="display">Light a candle, <em>leave a word.</em></h2>
                     <p class="candle-lead muted">Fill in your name, share a memory if you have one, and watch his candle glow beside you.</p>
+                    @if ($visitorTributes->isNotEmpty())
+                        <a href="#messages" class="candle-read">Read what others have written</a>
+                    @endif
                 </div>
 
                 <form class="candle-form reveal" method="POST" action="{{ route('tributes.store') }}" data-candle-form novalidate>

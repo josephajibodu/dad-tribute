@@ -231,6 +231,34 @@
     }
 
     /* ------------------------------------------------------------------
+       Visitors' messages: a few at first, more as the visitor asks
+       ------------------------------------------------------------------ */
+
+    var moreMessages = document.querySelector('[data-messages-more]');
+    if (moreMessages) {
+        var messageBatch = 6;
+        var waiting = Array.prototype.slice.call(document.querySelectorAll('[data-message]'), messageBatch);
+        waiting.forEach(function (m) { m.hidden = true; });
+
+        if (waiting.length) {
+            moreMessages.hidden = false;
+            moreMessages.addEventListener('click', function () {
+                var next = waiting.splice(0, messageBatch);
+                next.forEach(function (m, i) {
+                    m.style.setProperty('--d', (i % 3) * 0.08 + 's');
+                    m.hidden = false;
+                });
+                if (!waiting.length) {
+                    // The button is gone, so keep keyboard users where the new messages begin
+                    moreMessages.hidden = true;
+                    next[0].setAttribute('tabindex', '-1');
+                    try { next[0].focus({ preventScroll: true }); } catch (err) {}
+                }
+            });
+        }
+    }
+
+    /* ------------------------------------------------------------------
        Tribute reader: long tributes open in full in a popup
        ------------------------------------------------------------------ */
 
