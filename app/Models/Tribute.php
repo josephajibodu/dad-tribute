@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\TributeFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Tribute extends Model
 {
+    /** @use HasFactory<TributeFactory> */
+    use HasFactory;
+
     protected $fillable = ['name', 'relation', 'message', 'approved_at', 'ip_hash'];
 
     protected function casts(): array

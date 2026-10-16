@@ -320,5 +320,9 @@ return [
     // (php artisan tributes:review) before showing on the page.
     'moderate' => env('TRIBUTE_MODERATE', true),
 
+    // The password for the hidden /admin/tributes page, where every
+    // submitted tribute can be read. Leave it empty and the page is off.
+    'admin_password' => env('TRIBUTE_ADMIN_PASSWORD'),
+
     'footer' => 'With love, from his family',
 ];
