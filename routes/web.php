@@ -12,5 +12,5 @@ Route::post('/tributes', [TributeController::class, 'store'])
     ->name('tributes.store');
 
 Route::get('/admin/tributes', [AdminTributeController::class, 'index'])
-    ->middleware(['throttle:20,1', RequireAdminPassword::class])
+    ->middleware(RequireAdminPassword::class)
     ->name('admin.tributes');

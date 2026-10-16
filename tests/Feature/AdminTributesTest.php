@@ -62,6 +62,37 @@ class AdminTributesTest extends TestCase
         $response->assertSee('data-status="candle"', false);
     }
 
+    public function test_viewing_the_page_many_times_is_never_rate_limited(): void
+    {
+        for ($i = 0; $i < 30; $i++) {
+            $this->flushHeaders()->get(route('admin.tributes'))->assertUnauthorized();
+            $this->withBasicAuth('admin', 'correct-horse')->get(route('admin.tributes'))->assertOk();
+        }
+    }
+
+    public function test_lighting_candles_does_not_use_up_the_admin_page_limit(): void
+    {
+        for ($i = 0; $i < 6; $i++) {
+            $this->post(route('tributes.store'), ['name' => 'Visitor '.$i]);
+        }
+
+        $this->post(route('tributes.store'), ['name' => 'One too many'])->assertTooManyRequests();
+
+        $this->withBasicAuth('admin', 'correct-horse')->get(route('admin.tributes'))->assertOk();
+    }
+
+    public function test_too_many_wrong_passwords_make_the_visitor_wait(): void
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $this->withBasicAuth('admin', 'guess-'.$i)->get(route('admin.tributes'))->assertUnauthorized();
+        }
+
+        $response = $this->withBasicAuth('admin', 'correct-horse')->get(route('admin.tributes'));
+
+        $response->assertTooManyRequests();
+        $response->assertHeader('Retry-After');
+    }
+
     public function test_visitor_messages_are_escaped(): void
     {
         Tribute::factory()->create(['message' => '<script>alert(1)</script>']);
