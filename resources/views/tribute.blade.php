@@ -376,6 +376,14 @@
                             @endforeach
                         </div>
                     </div>
+                    <div class="message-row__controls" data-message-controls hidden>
+                        <button type="button" class="icon-btn" data-message-prev aria-label="Previous messages">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+                        </button>
+                        <button type="button" class="icon-btn" data-message-next aria-label="Next messages">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
                 </div>
             </section>
         @endif

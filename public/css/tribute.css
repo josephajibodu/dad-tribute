@@ -435,6 +435,12 @@ body.lightbox-open { overflow: hidden; }
     overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
 }
 .message-row__track::-webkit-scrollbar { display: none; }
+@media (hover: hover) and (pointer: fine) {
+    .message-row__track { cursor: grab; }
+    .message-row__track.is-dragging { cursor: grabbing; user-select: none; }
+}
+.message-row__controls { display: flex; justify-content: flex-end; gap: 10px; margin-top: 28px; }
+.message-row__controls[hidden] { display: none; }
 .tribute--visitor {
     flex: 0 0 clamp(270px, 28vw, 380px);
     padding: 40px 0 44px; gap: 22px;

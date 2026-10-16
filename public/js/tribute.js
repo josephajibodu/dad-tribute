@@ -247,24 +247,81 @@
 
     var messageRow = document.querySelector('[data-message-row]');
     var track = messageRow && messageRow.querySelector('[data-message-track]');
-    if (track && !reduceMotion && track.scrollWidth > track.clientWidth + 4) {
+    if (track && track.scrollWidth > track.clientWidth + 4) {
         var cards = Array.prototype.slice.call(track.children);
+        var controls = document.querySelector('[data-message-controls]');
+        var looping = !reduceMotion;
         var speed = 26; // pixels a second: slow enough to read as it passes
-        var position = 0, loopWidth = 0, lastFrame = null, resumeTimer = null;
+        var position = 0, loopWidth = 0, lastFrame = null, holdUntil = 0;
         var hovering = false, focused = false, touching = false, onScreen = true;
 
-        // A second copy follows the first so the row can loop without a gap
-        cards.forEach(function (card) {
-            var copy = card.cloneNode(true);
-            copy.setAttribute('aria-hidden', 'true');
-            copy.removeAttribute('data-message');
-            copy.querySelectorAll('button').forEach(function (b) { b.tabIndex = -1; });
-            track.appendChild(copy);
-        });
+        // Hold the drift for a few seconds after the visitor moves the row themselves
+        var hold = function (ms) { holdUntil = Math.max(holdUntil, performance.now() + ms); };
 
-        var measure = function () { loopWidth = track.children[cards.length].offsetLeft - cards[0].offsetLeft; };
+        // A second copy follows the first so the row can loop without a gap
+        if (looping) {
+            cards.forEach(function (card) {
+                var copy = card.cloneNode(true);
+                copy.setAttribute('aria-hidden', 'true');
+                copy.removeAttribute('data-message');
+                copy.querySelectorAll('button').forEach(function (b) { b.tabIndex = -1; });
+                track.appendChild(copy);
+            });
+        }
+
+        var measure = function () { loopWidth = looping ? track.children[cards.length].offsetLeft - cards[0].offsetLeft : 0; };
         measure();
         window.addEventListener('resize', measure);
+
+        // Jump back to the first copy once the second has fully scrolled into place,
+        // or forward to the second when a step back would run past the start
+        var wrap = function (backBy) {
+            if (!loopWidth) return;
+            if (track.scrollLeft >= loopWidth) track.scrollLeft -= loopWidth;
+            else if (backBy && track.scrollLeft < backBy) track.scrollLeft += loopWidth;
+            position = track.scrollLeft;
+        };
+
+        // Arrows: one card at a time, for anyone who wants to move faster than the drift
+        if (controls) {
+            controls.hidden = false;
+            var step = function (direction) {
+                hold(6000);
+                var distance = cards[0].offsetWidth + (parseFloat(getComputedStyle(track).columnGap) || 0);
+                wrap(direction < 0 ? distance : 0);
+                track.scrollBy({ left: direction * distance, behavior: reduceMotion ? 'auto' : 'smooth' });
+            };
+            controls.querySelector('[data-message-prev]').addEventListener('click', function () { step(-1); });
+            controls.querySelector('[data-message-next]').addEventListener('click', function () { step(1); });
+        }
+
+        // Click and drag with a mouse; touch screens and trackpads already scroll the row natively
+        var drag = null;
+        track.addEventListener('pointerdown', function (e) {
+            if (e.pointerType !== 'mouse' || e.button !== 0) return;
+            drag = { x: e.clientX, scroll: track.scrollLeft, moved: false };
+        });
+        window.addEventListener('pointermove', function (e) {
+            if (!drag) return;
+            var dx = e.clientX - drag.x;
+            if (!drag.moved && Math.abs(dx) < 6) return;
+            drag.moved = true;
+            track.classList.add('is-dragging');
+            track.scrollLeft = drag.scroll - dx;
+            if (loopWidth && track.scrollLeft >= loopWidth) { drag.scroll -= loopWidth; track.scrollLeft -= loopWidth; }
+            if (loopWidth && track.scrollLeft <= 0 && dx > 0) { drag.scroll += loopWidth; track.scrollLeft += loopWidth; }
+            hold(4000);
+        });
+        window.addEventListener('pointerup', function () {
+            if (!drag) return;
+            if (drag.moved) {
+                // A drag that ends over "Read more" shouldn't open it
+                track.addEventListener('click', function swallow(e) { e.stopPropagation(); e.preventDefault(); }, { capture: true, once: true });
+                setTimeout(function () { track.classList.remove('is-dragging'); }, 0);
+            }
+            drag = null;
+        });
+        track.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
         // Wait while the visitor points at it, tabs through it, or swipes it themselves
         messageRow.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hovering = true; });
@@ -274,31 +331,35 @@
             try { focused = e.target.matches(':focus-visible'); } catch (err) { focused = true; }
         });
         track.addEventListener('focusout', function () { focused = false; });
-        track.addEventListener('touchstart', function () { touching = true; clearTimeout(resumeTimer); }, { passive: true });
-        track.addEventListener('touchend', function () {
-            clearTimeout(resumeTimer);
-            resumeTimer = setTimeout(function () { touching = false; }, 3000);
-        }, { passive: true });
-        track.addEventListener('scroll', function () {
-            if (Math.abs(track.scrollLeft - position) > 2) position = track.scrollLeft;
-        }, { passive: true });
+        track.addEventListener('touchstart', function () { touching = true; }, { passive: true });
+        track.addEventListener('touchend', function () { touching = false; hold(3000); }, { passive: true });
+        // A trackpad swipe or shift-scroll counts as the visitor taking over too
+        track.addEventListener('wheel', function (e) { if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) hold(3000); }, { passive: true });
 
         if ('IntersectionObserver' in window) {
             new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }).observe(messageRow);
         }
 
-        var drift = function (now) {
-            var seconds = lastFrame === null ? 0 : Math.min(now - lastFrame, 250) / 1000;
-            lastFrame = now;
-            // body.reader-open: a message is open in the reader
-            if (!(hovering || focused || touching || !onScreen || body.classList.contains('reader-open'))) {
-                position += speed * seconds;
-            }
-            if (loopWidth > 0 && position >= loopWidth) position -= loopWidth;
-            if (Math.abs(track.scrollLeft - position) >= 0.5) track.scrollLeft = position;
+        if (looping) {
+            var drift = function (now) {
+                var seconds = lastFrame === null ? 0 : Math.min(now - lastFrame, 250) / 1000;
+                lastFrame = now;
+                // body.reader-open: a message is open in the reader
+                var paused = hovering || focused || touching || drag || !onScreen || now < holdUntil || body.classList.contains('reader-open');
+                if (paused) {
+                    // Leave the row wherever the visitor put it, and carry on from there
+                    position = track.scrollLeft;
+                    // ...but not mid-glide, which a jump would cut short
+                    if (!drag && now >= holdUntil && track.scrollLeft >= loopWidth) wrap(0);
+                } else {
+                    position += speed * seconds;
+                    if (position >= loopWidth) position -= loopWidth;
+                    track.scrollLeft = position;
+                }
+                window.requestAnimationFrame(drift);
+            };
             window.requestAnimationFrame(drift);
-        };
-        window.requestAnimationFrame(drift);
+        }
     }
 
     /* ------------------------------------------------------------------
