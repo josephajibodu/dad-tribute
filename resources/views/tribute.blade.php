@@ -240,41 +240,6 @@
                         </article>
                     @endforeach
                 </div>
-
-                @if ($visitorTributes->isNotEmpty())
-                    <div id="messages" class="messages" data-messages>
-                        <div class="section-head reveal">
-                            <div>
-                                <p class="eyebrow">From friends &amp; visitors</p>
-                                <h3 class="messages__title">Words left <em>by candlelight.</em></h3>
-                            </div>
-                            <p class="muted">{{ $visitorTributes->count() === 1 ? 'A message' : number_format($visitorTributes->count()).' messages' }} from those who lit a candle in his memory.</p>
-                        </div>
-                        <div class="tribute-grid">
-                            @foreach ($visitorTributes as $tr)
-                                @php($excerpt = Str::words($tr->message, 40, '…'))
-                                <article class="tribute tribute--visitor reveal" data-message>
-                                    <span class="quote-mark" aria-hidden="true">“</span>
-                                    <p class="tribute__text" data-clamp>{{ $excerpt }}</p>
-                                    {{-- Shown when the words were cut short here, or when the page cuts the preview to four lines --}}
-                                    <button type="button" class="tribute__more" data-reader-open @if ($excerpt === $tr->message) hidden @endif>Read more</button>
-                                    <template data-reader-content>
-                                        <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
-                                    </template>
-                                    <div class="tribute__by">
-                                        <span class="tribute__name">{{ $tr->name }}</span>
-                                        @if ($tr->relation)
-                                            <span class="tribute__relation">{{ $tr->relation }}</span>
-                                        @endif
-                                    </div>
-                                </article>
-                            @endforeach
-                        </div>
-                        <div class="messages__more">
-                            <button type="button" class="btn btn--ghost" data-messages-more hidden>Read more messages</button>
-                        </div>
-                    </div>
-                @endif
             </div>
         </section>
 
@@ -376,6 +341,44 @@
                 </form>
             </div>
         </section>
+
+        {{-- MESSAGES LEFT BY VISITORS (just after the form where they are written) --}}
+        @if ($visitorTributes->isNotEmpty())
+            <section id="messages" class="messages" data-messages>
+                <div class="container">
+                    <div class="section-head reveal">
+                        <div>
+                            <p class="eyebrow">From friends &amp; visitors</p>
+                            <h2 class="messages__title">Words left <em>by candlelight.</em></h2>
+                        </div>
+                        <p class="muted">{{ $visitorTributes->count() === 1 ? 'A message' : number_format($visitorTributes->count()).' messages' }} from those who lit a candle in his memory.</p>
+                    </div>
+                    <div class="tribute-grid">
+                        @foreach ($visitorTributes as $tr)
+                            @php($excerpt = Str::words($tr->message, 40, '…'))
+                            <article class="tribute tribute--visitor reveal" data-message>
+                                <span class="quote-mark" aria-hidden="true">“</span>
+                                <p class="tribute__text" data-clamp>{{ $excerpt }}</p>
+                                {{-- Shown when the words were cut short here, or when the page cuts the preview to four lines --}}
+                                <button type="button" class="tribute__more" data-reader-open @if ($excerpt === $tr->message) hidden @endif>Read more</button>
+                                <template data-reader-content>
+                                    <p class="reader__text reader__text--plain">{{ $tr->message }}</p>
+                                </template>
+                                <div class="tribute__by">
+                                    <span class="tribute__name">{{ $tr->name }}</span>
+                                    @if ($tr->relation)
+                                        <span class="tribute__relation">{{ $tr->relation }}</span>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                    <div class="messages__more">
+                        <button type="button" class="btn btn--ghost" data-messages-more hidden>Read more messages</button>
+                    </div>
+                </div>
+            </section>
+        @endif
 
         {{-- The lighting moment (shown on small screens, where the candle can't sit beside the form) --}}
         <div class="candle-moment" data-candle-moment aria-hidden="true" role="dialog" aria-label="Your candle">

@@ -10,14 +10,14 @@ class VisitorMessagesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_approved_messages_show_in_their_own_place_after_the_family_tributes(): void
+    public function test_approved_messages_show_just_below_the_candle_form(): void
     {
         config(['tribute.family_tributes' => [['name' => 'Joseph Ajibodu', 'relation' => 'First son', 'text' => 'Rest well, Dad.']]]);
         Tribute::factory()->approved()->create(['name' => 'Ade', 'message' => 'He was a kind man.']);
 
         $response = $this->get(route('tribute'));
 
-        $response->assertSeeInOrder(['Rest well, Dad.', 'id="messages"', 'Words left', 'He was a kind man.', 'id="service"'], false);
+        $response->assertSeeInOrder(['Rest well, Dad.', 'id="service"', 'data-candle-form', '</form>', 'id="messages"', 'Words left', 'He was a kind man.', 'site-footer'], false);
         $response->assertSee('A message from those who lit a candle in his memory.');
     }
 
