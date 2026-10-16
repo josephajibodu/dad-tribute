@@ -70,6 +70,15 @@ class AdminTributesTest extends TestCase
         }
     }
 
+    public function test_empty_credentials_from_the_browser_do_not_count_as_wrong_passwords(): void
+    {
+        for ($i = 0; $i < 15; $i++) {
+            $this->withBasicAuth('', '')->get(route('admin.tributes'))->assertUnauthorized();
+        }
+
+        $this->withBasicAuth('admin', 'correct-horse')->get(route('admin.tributes'))->assertOk();
+    }
+
     public function test_lighting_candles_does_not_use_up_the_admin_page_limit(): void
     {
         for ($i = 0; $i < 6; $i++) {

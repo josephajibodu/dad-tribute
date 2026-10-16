@@ -16,8 +16,8 @@ class RequireAdminPassword
 
     /**
      * Let the request through only with the admin password, asked for by the browser's own sign-in prompt.
-     * Without a password configured, the admin pages do not exist. Only wrong passwords count towards the
-     * limit, so viewing and refreshing the page while signed in is never blocked.
+     * Without a password configured, the admin pages do not exist. Only a wrong password that was actually
+     * typed counts towards the limit; a visit with none, or a browser resending empty credentials, never does.
      *
      * @param  Closure(Request): (Response)  $next
      */
@@ -38,7 +38,7 @@ class RequireAdminPassword
         }
 
         if (! hash_equals((string) $password, (string) $request->getPassword())) {
-            if ($request->getPassword() !== null) {
+            if (filled($request->getPassword())) {
                 RateLimiter::hit($limiterKey);
             }
 
