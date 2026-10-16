@@ -231,6 +231,77 @@
     }
 
     /* ------------------------------------------------------------------
+       His life: chapters that run sideways, with a counter and arrows
+       ------------------------------------------------------------------ */
+
+    var chapterList = document.querySelector('[data-chapters]');
+    var chapterNav = document.querySelector('[data-chapters-nav]');
+    if (chapterList && chapterNav && chapterList.scrollWidth > chapterList.clientWidth + 4) {
+        var chapters = chapterList.children;
+        var currentEl = chapterNav.querySelector('[data-chapter-current]');
+        var progressEl = chapterNav.querySelector('[data-chapter-progress]');
+        var prevBtn = chapterNav.querySelector('[data-chapter-prev]');
+        var nextBtn = chapterNav.querySelector('[data-chapter-next]');
+        var touched = false;
+
+        chapterNav.hidden = false;
+        chapterNav.classList.add('is-fresh');
+
+        var chapterStep = function () {
+            return chapters[1] ? chapters[1].offsetLeft - chapters[0].offsetLeft : chapterList.clientWidth;
+        };
+
+        var update = function () {
+            var max = chapterList.scrollWidth - chapterList.clientWidth;
+            var index = chapterList.scrollLeft >= max - 4
+                ? chapters.length - 1
+                : Math.round(chapterList.scrollLeft / chapterStep());
+            currentEl.textContent = (index < 9 ? '0' : '') + (index + 1);
+            progressEl.style.width = ((index + 1) / chapters.length * 100) + '%';
+            prevBtn.disabled = chapterList.scrollLeft <= 4;
+            nextBtn.disabled = chapterList.scrollLeft >= max - 4;
+        };
+
+        // Once the visitor moves the row themselves, they've found it: stop beckoning
+        var settle = function () {
+            if (touched) return;
+            touched = true;
+            chapterNav.classList.remove('is-fresh');
+            chapterList.classList.remove('is-nudging');
+        };
+
+        var scrollFrame = null;
+        chapterList.addEventListener('scroll', function () {
+            if (chapterList.scrollLeft > 4) settle();
+            if (scrollFrame) return;
+            scrollFrame = requestAnimationFrame(function () { scrollFrame = null; update(); });
+        }, { passive: true });
+        window.addEventListener('resize', update);
+
+        var stepChapters = function (direction) {
+            settle();
+            chapterList.scrollBy({ left: direction * chapterStep(), behavior: reduceMotion ? 'auto' : 'smooth' });
+        };
+        prevBtn.addEventListener('click', function () { stepChapters(-1); });
+        nextBtn.addEventListener('click', function () { stepChapters(1); });
+
+        // Lean the row to the left once, the first time most of it is on screen, to show it moves
+        if (!reduceMotion && 'IntersectionObserver' in window) {
+            var nudgeWatch = new IntersectionObserver(function (entries) {
+                if (!entries[0].isIntersecting) return;
+                nudgeWatch.disconnect();
+                setTimeout(function () {
+                    if (!touched) chapterList.classList.add('is-nudging');
+                }, 900);
+            }, { threshold: 0.6 });
+            nudgeWatch.observe(chapterList);
+            chapterList.addEventListener('animationend', function () { chapterList.classList.remove('is-nudging'); });
+        }
+
+        update();
+    }
+
+    /* ------------------------------------------------------------------
        Visitors' messages: one row that drifts by and waits for the reader
        ------------------------------------------------------------------ */
 

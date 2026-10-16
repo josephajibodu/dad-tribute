@@ -141,7 +141,7 @@
             </div>
             <div class="container"><div class="grow-line" aria-hidden="true"></div></div>
 
-            <ol class="chapters" tabindex="0" aria-label="Chapters of his life">
+            <ol class="chapters" tabindex="0" aria-label="Chapters of his life" data-chapters>
                 @foreach ($t['life']['chapters'] as $chapter)
                     <li class="chapter reveal" style="--d:{{ $loop->index * 0.08 }}s">
                         <span class="chapter__year">{{ $chapter['year'] }}</span>
@@ -150,7 +150,22 @@
                     </li>
                 @endforeach
             </ol>
-            <p class="hint container">Scroll sideways through the chapters →</p>
+            {{-- Shown once the script knows the chapters run past the edge of the screen --}}
+            <div class="chapters-nav container" data-chapters-nav hidden>
+                <p class="chapters-nav__count">
+                    <span class="chapters-nav__current" data-chapter-current>01</span>
+                    <span class="chapters-nav__total">/ {{ sprintf('%02d', count($t['life']['chapters'])) }}</span>
+                </p>
+                <div class="chapters-nav__bar" aria-hidden="true"><span data-chapter-progress></span></div>
+                <div class="chapters-nav__arrows">
+                    <button type="button" class="icon-btn" data-chapter-prev aria-label="Previous chapter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+                    </button>
+                    <button type="button" class="icon-btn" data-chapter-next aria-label="Next chapter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
         </section>
 
         {{-- WHO HE WAS --}}

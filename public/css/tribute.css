@@ -319,7 +319,24 @@ em { font-style: italic; color: var(--gold); }
 .chapter__year { font-family: var(--serif); font-size: 72px; line-height: 1; font-weight: 300; color: var(--gold); }
 .chapter h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 30px; }
 .chapter p { margin: 0; font-size: 16px; line-height: 1.7; color: var(--muted); }
-.hint { margin-top: 8px; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--faint); }
+/* Counter, progress line and arrows under the chapters, so it's plain the row moves sideways */
+.chapters-nav { display: flex; align-items: center; gap: 20px; margin-top: 12px; }
+.chapters-nav[hidden] { display: none; }
+.chapters-nav__count { margin: 0; flex: none; font-family: var(--serif); font-weight: 300; line-height: 1; white-space: nowrap; }
+.chapters-nav__count { font-variant-numeric: lining-nums tabular-nums; }
+.chapters-nav__current { font-size: 30px; color: var(--gold); }
+.chapters-nav__total { font-size: 18px; color: var(--faint); }
+.chapters-nav__bar { position: relative; flex: 1; height: 1px; background: var(--line-strong); }
+.chapters-nav__bar span {
+    position: absolute; left: 0; top: -1px; height: 3px; width: 0;
+    background: var(--gold); transition: width .5s var(--ease-out);
+}
+.chapters-nav__arrows { display: flex; gap: 10px; flex: none; }
+.chapters-nav .icon-btn:disabled { opacity: .35; cursor: default; border-color: var(--line); }
+/* Until the visitor moves the row, the next arrow glows softly to invite them */
+.chapters-nav.is-fresh [data-chapter-next] { border-color: var(--gold); color: var(--gold); animation: beckon 2.4s ease-in-out infinite; }
+/* Played once when the chapters first come into view: the row leans left and settles back */
+.chapters.is-nudging .chapter { animation: nudge 1.5s var(--ease-out) both; }
 
 /* ---------- Who he was ---------- */
 
@@ -687,6 +704,8 @@ body.moment-open { overflow: hidden; }
 }
 @keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes scrollCue { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }
+@keyframes beckon { 0%, 100% { box-shadow: 0 0 0 0 rgba(200, 165, 106, 0); } 50% { box-shadow: 0 0 0 8px rgba(200, 165, 106, .14); } }
+@keyframes nudge { 0%, 100% { translate: 0 0; } 40%, 55% { translate: -64px 0; } }
 @keyframes eq { 0%, 100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
 
 /* The unlit candle must not flicker until lit */
@@ -706,6 +725,13 @@ body.moment-open { overflow: hidden; }
     .hero__dates .rule { width: 56px; }
     .tribute__text { font-size: 22px; }
     .message-row__track { gap: 28px; }
+    /* Narrower chapters on phones so a good slice of the next one shows at the edge */
+    .chapters { gap: 14px; scrollbar-width: none; }
+    .chapters::-webkit-scrollbar { display: none; }
+    .chapter { flex-basis: calc(100vw - var(--gutter) * 2 - 44px); padding: 32px 24px 36px; min-height: 320px; }
+    .chapter__year { font-size: 60px; }
+    .chapter h3 { font-size: 27px; }
+    .chapters-nav { gap: 16px; }
     .reader__inner { padding-top: 80px; padding-left: 16px; padding-right: 16px; }
     .reader__text { font-size: 20px; }
     .player__title { max-width: 120px; }
